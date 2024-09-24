@@ -1,6 +1,6 @@
 # Java SpringBoot App
 # Java Code Copilot Enterprise Poc 
-githubactions
+
 
 This repository is a Proof of Concept (PoC) for integrating GitHub Copilot with a Java SpringBoot project.
 
