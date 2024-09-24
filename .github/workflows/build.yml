@@ -108,7 +108,7 @@
 #     #     IMAGE="${{ secrets.IMAGE_NAME }}:${{ github.sha }}"
 #     #     docker push $IMAGE
 
-name: Build and Deploy Java App Docker Image
+name: Build 
 on:
   push:
     branches: [ "master" ]
