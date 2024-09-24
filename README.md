@@ -2,7 +2,7 @@
 # Java Code Copilot Enterprise PoC
 
 This repository is a Proof of Concept (PoC) for integrating GitHub Copilot with a Java SpringBoot project.
-
+--------
 ## Table of Contents
 
 - [About](#about)
