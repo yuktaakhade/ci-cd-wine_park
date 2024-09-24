@@ -25,7 +25,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>
@@ -69,7 +68,6 @@
 					</excludes>
 				</configuration>
 			</plugin>
-
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -106,20 +104,6 @@
 								</rule>
 							</rules>
 						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<!-- SonarQube Maven Plugin -->
-			<plugin>
-				<groupId>org.sonarsource.scanner.maven</groupId>
-				<artifactId>sonar-maven-plugin</artifactId>
-				<version>3.9.1.2184</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>sonar</goal>
-						</goals>
 					</execution>
 				</executions>
 			</plugin>
