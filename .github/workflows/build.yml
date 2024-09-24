@@ -1,10 +1,9 @@
 name: Build and Deploy Java App Docker Image
-
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
   workflow_dispatch:
 
 jobs:
@@ -87,9 +86,6 @@ jobs:
     #   run: |
     #     IMAGE="${{ secrets.IMAGE_NAME }}:${{ github.sha }}"
     #     docker build --build-arg MYSQL_HOST_WITH_PORT=$MYSQL_HOST_WITH_PORT --build-arg MYSQL_DB_NAME=$MYSQL_DB_NAME --build-arg MYSQL_USER=$MYSQL_USER --build-arg MYSQL_PASSWORD=$MYSQL_PASSWORD -t $IMAGE .
-
-
-
 
 
     # - name: Run Trivy vulnerability scanner
