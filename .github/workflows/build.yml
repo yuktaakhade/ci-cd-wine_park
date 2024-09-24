@@ -2,7 +2,7 @@ name: Build and Deploy Java App Docker Image
 
 on:
   push:
-    branches: [ "feature", "main" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
@@ -24,7 +24,6 @@ jobs:
     - name: 'Checkout code'
       uses: 'actions/checkout@v3'
       
-
     - name: Build and analyze
       run: |
         mvn clean package
@@ -33,7 +32,18 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-
+    ## Secret Scanning
+    - name: Scan for Secrets using Trivy
+      uses: aquasecurity/trivy-action@0.20.0
+      with:
+        targets: 'src/'  # Replace 'src/' with your source code directory
+        format: 'table'  # Output format (table, json, csv, etc.)
+        ignore_unfixed: 'false'  # Whether to ignore unfixed vulnerabilities
+        severity: 'HIGH,CRITICAL,MEDIUM,LOW'  # Minimum severity level to report (e.g., 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL')
+        scan-type: 'fs'
+        exit-code: '0'
+        # scan-ref: '.'
+        # trivy-config: trivy.yaml
     - name: Cache SonarQube packages
       uses: actions/cache@v1
       with:
@@ -46,12 +56,17 @@ jobs:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
+    # - name: Build and analyze
+    #   env:
+    #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+    #   run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=java-code-wine-park -Dsonar.projectName='java-code-wine-park'
     - name: Build and analyze
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=java-code-wine-park -Dsonar.projectName='java-code-wine-park'
-
+        env:
+          GITHUB_TOKEN: ${{ secrets.CICD_GITHUB_TOKEN}}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=githubaction-cicd
     - id: 'auth'
       name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v0'
@@ -60,35 +75,35 @@ jobs:
         workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
         service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
 
-    # Step 9: Docker login to Google Artifact Registry
-    - name: 'Docker username and password'
-      uses: 'docker/login-action@v1'
-      with:
-        registry: '${{ secrets.REGION }}-docker.pkg.dev' #gcr.io' # or REGION-docker.pkg.dev
-        username: 'oauth2accesstoken'
-        password: '${{ steps.auth.outputs.access_token }}'
+    # # Step 9: Docker login to Google Artifact Registry
+    # - name: 'Docker username and password'
+    #   uses: 'docker/login-action@v1'
+    #   with:
+    #     registry: '${{ secrets.REGION }}-docker.pkg.dev' #gcr.io' # or REGION-docker.pkg.dev
+    #     username: 'oauth2accesstoken'
+    #     password: '${{ steps.auth.outputs.access_token }}'
 
-    - name: Build Docker Image
-      run: |
-        IMAGE="${{ secrets.IMAGE_NAME }}:${{ github.sha }}"
-        docker build --build-arg MYSQL_HOST_WITH_PORT=$MYSQL_HOST_WITH_PORT --build-arg MYSQL_DB_NAME=$MYSQL_DB_NAME --build-arg MYSQL_USER=$MYSQL_USER --build-arg MYSQL_PASSWORD=$MYSQL_PASSWORD -t $IMAGE .
+    # - name: Build Docker Image
+    #   run: |
+    #     IMAGE="${{ secrets.IMAGE_NAME }}:${{ github.sha }}"
+    #     docker build --build-arg MYSQL_HOST_WITH_PORT=$MYSQL_HOST_WITH_PORT --build-arg MYSQL_DB_NAME=$MYSQL_DB_NAME --build-arg MYSQL_USER=$MYSQL_USER --build-arg MYSQL_PASSWORD=$MYSQL_PASSWORD -t $IMAGE .
 
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@0.20.0
-      with:
-        image-ref: ${{ secrets.IMAGE_NAME }}:${{ github.sha }}
-        format: 'sarif'
-        output: 'trivy-results.sarif'
-        ignore-unfixed: true
-        vuln-type: 'os,library'
-        severity: 'CRITICAL,HIGH'
+    # - name: Run Trivy vulnerability scanner
+    #   uses: aquasecurity/trivy-action@0.20.0
+    #   with:
+    #     image-ref: ${{ secrets.IMAGE_NAME }}:${{ github.sha }}
+    #     format: 'sarif'
+    #     output: 'trivy-results.sarif'
+    #     ignore-unfixed: true
+    #     vuln-type: 'os,library'
+    #     severity: 'CRITICAL,HIGH'
 
-    - name: Upload Trivy scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: 'trivy-results.sarif'
+    # - name: Upload Trivy scan results to GitHub Security tab
+    #   uses: github/codeql-action/upload-sarif@v3
+    #   with:
+    #     sarif_file: 'trivy-results.sarif'
 
-    - name: Docker Push to GAR
-      run: |
-        IMAGE="${{ secrets.IMAGE_NAME }}:${{ github.sha }}"
-        docker push $IMAGE
+    # - name: Docker Push to GAR
+    #   run: |
+    #     IMAGE="${{ secrets.IMAGE_NAME }}:${{ github.sha }}"
+    #     docker push $IMAGE
