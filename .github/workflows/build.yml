@@ -102,6 +102,7 @@
 #      # - name: Docker Push to GAR
 #      #   run: |
 #      #     docker push us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
+-----------------
 name: Build
 on:
   push:
@@ -169,7 +170,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-#        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=githubaction-cicd
+        # run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=githubaction-cicd
 
       - name: Build and analyze
         run: |
@@ -177,13 +178,11 @@ jobs:
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v2.0.0 '
+        uses: 'google-github-actions/auth@v2.0.0'
         with:
-          # token_format: 'access_token'
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-       
-      
+
       # Uncomment the following steps when ready to build and push Docker images
 
       # - name: Build Docker image
