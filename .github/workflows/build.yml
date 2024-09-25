@@ -170,9 +170,9 @@ jobs:
 
       # Uncomment the following steps when ready to build and push Docker images
 
-      # - name: Build Docker image
-      #   run: |
-      #     docker build -t us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }} .
+      - name: Build Docker image
+        run: |
+         docker build -t us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }} .
 
       # - name: Run Trivy vulnerability scanner
       #   uses: aquasecurity/trivy-action@0.20.0
