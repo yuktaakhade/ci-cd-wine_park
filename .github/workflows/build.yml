@@ -93,7 +93,6 @@
 #      #   run: |
 #      #     docker push us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
 
-
 name: Build
 on:
   push:
@@ -156,7 +155,7 @@ jobs:
           mvn clean package
 
       - name: Authenticate with Google Cloud
-        id: auth  # The 'id' key needs to be on the same level as the action
+        id: auth  # Correct placement of 'id'
         uses: google-github-actions/auth@v2.0.0
         with:
           workload_identity_provider: '${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}'
