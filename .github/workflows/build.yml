@@ -150,7 +150,11 @@ jobs:
           severity: 'HIGH,CRITICAL,MEDIUM,LOW'  # Minimum severity level to report
           scan-type: 'fs'
           exit-code: '0'
+      - name: Run Unit Tests
+        run: mvn test
 
+      - name: Generate Code Coverage Report
+        run: mvn jacoco:report
       # - name: Cache SonarQube packages
       #   uses: actions/cache@v1
       #   with:
@@ -165,20 +169,18 @@ jobs:
       #     key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
       #     restore-keys: ${{ runner.os }}-m2
 
+      - name: Analyze with SonarQube
+        env:
+#          GITHUB_TOKEN: ${{ secrets.CICD_GITHUB_TOKEN }}  # Needed to get PR info
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+#        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=githubaction-cicd
       - name: Build and analyze
         run: |
           mvn clean package
-
-      - name: Build and analyze with SonarQube
-        env:
-          GITHUB_TOKEN: ${{ secrets.CICD_GITHUB_TOKEN }}  # Needed to get PR info
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=githubaction-cicd
-
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v0'
+        uses: 'google-github-actions/auth@v1'
         with:
           token_format: 'access_token'
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
