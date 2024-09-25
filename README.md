@@ -12,7 +12,7 @@ This repository is a Proof of Concept (PoC) for integrating GitHub Copilot with 
 - [Contributing](#contributing)
 - [License](#license)
 
-## About
+########### About
 
 This project aims to demonstrate the capabilities and benefits of using GitHub Copilot in a Java SpringBoot application. It showcases how Copilot can assist in writing code, providing suggestions, and improving overall development efficiency.
 
