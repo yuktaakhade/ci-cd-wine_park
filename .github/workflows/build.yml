@@ -131,7 +131,6 @@ jobs:
       MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
 
 
-
     steps:
 
     - name: Checkout
