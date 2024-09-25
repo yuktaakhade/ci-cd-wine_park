@@ -130,7 +130,6 @@ jobs:
       - name: Scan for Secrets using Trivy
         uses: aquasecurity/trivy-action@0.20.0
         with:
-#          scan-type: 'secret'  # Use 'secret' for secret scanning
           targets: 'src/'  # Replace 'src/' with your source code directory
           format: 'table'  # Output format (table, json, csv, etc.)
           ignore-unfixed: 'false'  # Whether to ignore unfixed vulnerabilities
