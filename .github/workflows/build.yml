@@ -154,8 +154,15 @@ jobs:
         run: |
           mvn clean package
 
+#      - name: Authenticate with Google Cloud
+#        id: auth  # Correct placement of 'id'
+#        uses: google-github-actions/auth@v2.0.0
+#        with:
+#          workload_identity_provider: '${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}'
+#          service_account: '${{ secrets.SERVICE_ACCOUNT_EMAIL }}'
+
       - name: Authenticate with Google Cloud
-        id: auth  # Correct placement of 'id'
+        id: auth
         uses: google-github-actions/auth@v2.0.0
         with:
           workload_identity_provider: '${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}'
