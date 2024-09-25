@@ -31,15 +31,18 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      ## Secret Scanning
       - name: Scan for Secrets using Trivy
         uses: aquasecurity/trivy-action@0.20.0
         with:
           targets: 'src/'  # Replace 'src/' with your source code directory
           format: 'table'  # Output format (table, json, csv, etc.)
-          ignore-unfixed: 'false'  # Whether to ignore unfixed vulnerabilities
-          severity: 'HIGH,CRITICAL,MEDIUM,LOW'  # Minimum severity level to report
+          ignore_unfixed: 'false'  # Whether to ignore unfixed vulnerabilities
+          severity: 'HIGH,CRITICAL,MEDIUM,LOW'  # Minimum severity level to report (e.g., 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL')
           scan-type: 'fs'
           exit-code: '0'
+          # scan-ref: '.'
+          # trivy-config: trivy.yaml
 
       - name: Run Unit Tests
         run: mvn test
@@ -58,12 +61,12 @@ jobs:
         run: |
           mvn clean package
 
-      - id: 'auth'
-        name: 'Authenticate to Google Cloud'
-        uses:  google-github-actions/auth@v2.0.0
-        with:
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+      - name: Authenticate with Google Cloud
+      - id: auth
+        uses: google-github-actions/auth@v2.0.0
+          with:
+            workload_identity_provider: '${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}'
+            service_account: '${{ secrets.SERVICE_ACCOUNT_EMAIL }}'
 
       # Uncomment the following steps when ready to build and push Docker images
 
