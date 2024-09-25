@@ -82,7 +82,8 @@
 #      #     output: 'trivy-results.sarif'
 #      #     ignore-unfixed: true
 #      #     vuln-type: 'os,library'
-#      #     severity: 'CRITICAL,HIGH'
+#      #     severity: 'CRITICAL,HIGH'+
+
 #
 #      # - name: Upload Trivy scan results to GitHub Security tab
 #      #   uses: github/codeql-action/upload-sarif@v3
@@ -174,20 +175,32 @@ jobs:
         run: |
          docker build -t us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }} .
 
+#      - name: Run Trivy vulnerability scanner
+#        uses: aquasecurity/trivy-action@0.20.0
+#        with:
+#          image-ref: us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
+#          format: 'table'
+#          output: 'trivy-results.sarif'
+#          ignore-unfixed: true
+#          vuln-type: 'os,library'
+#          severity: 'CRITICAL,HIGH'
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.20.0
         with:
-          image-ref: us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
+          image-ref: 'us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}'
           format: 'sarif'
           output: 'trivy-results.sarif'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v2
         with:
-         sarif_file: 'trivy-results.sarif'
+          sarif_file: 'trivy-results.sarif'
+#
+#
+#      - name: Upload Trivy scan results to GitHub Security tab
+#        uses: github/codeql-action/upload-sarif@v3
+#        with:
+#         sarif_file: 'trivy-results.sarif'
 
       - name: Docker Push to GAR
         run: |
