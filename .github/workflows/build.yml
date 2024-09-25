@@ -130,12 +130,12 @@ jobs:
       - name: Scan for Secrets using Trivy
         uses: aquasecurity/trivy-action@0.20.0
         with:
-          scan-type: 'secret'  # Use 'secret' for secret scanning
+#          scan-type: 'secret'  # Use 'secret' for secret scanning
           targets: 'src/'  # Replace 'src/' with your source code directory
           format: 'table'  # Output format (table, json, csv, etc.)
           ignore-unfixed: 'false'  # Whether to ignore unfixed vulnerabilities
           severity: 'HIGH,CRITICAL,MEDIUM,LOW'  # Minimum severity level to report (e.g., 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL')
-#          scan-type: 'fs'
+          scan-type: 'fs'
           exit-code: '0'
 
       - name: Run Unit Tests
