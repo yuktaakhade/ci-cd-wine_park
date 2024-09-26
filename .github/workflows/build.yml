@@ -98,6 +98,7 @@ jobs:
 #          image: us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
 ##          ports:
 ##            - containerPort: 8080
+      -
 
       - name: Deploy to Cloud Run with environment variables
         run: |
