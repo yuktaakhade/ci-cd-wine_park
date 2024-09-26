@@ -208,8 +208,8 @@ jobs:
     permissions:
       id-token: write
       security-events: write
-       actions: read
-       contents: read
+      actions: read
+      contents: read
     env:
       MYSQL_HOST_WITH_PORT: ${{ secrets.MYSQL_HOST_WITH_PORT }}
       MYSQL_DB_NAME: ${{ secrets.MYSQL_DB_NAME }}
