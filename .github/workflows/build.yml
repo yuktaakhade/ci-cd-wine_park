@@ -98,3 +98,4 @@ jobs:
             MYSQL_DB=${{ secrets.MYSQL_DB_NAME }}
             MYSQL_USER=${{ secrets.MYSQL_USER }}
             MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+
