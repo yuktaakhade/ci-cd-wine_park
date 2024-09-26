@@ -1,4 +1,3 @@
-
 name: Build
 on:
   push:
@@ -36,10 +35,10 @@ jobs:
       - name: Scan for Secrets using Trivy
         uses: aquasecurity/trivy-action@0.20.0
         with:
-          scan-ref: .  # Replace 'src/' with your source code directory
-          format: 'table'  # Output format (table, json, csv, etc.)
-          ignore-unfixed: 'false'  # Whether to ignore unfixed vulnerabilities
-          severity: 'HIGH,CRITICAL,MEDIUM,LOW'  # Minimum severity level to report (e.g., 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL')
+          scan-ref: .
+          format: 'table'
+          ignore-unfixed: 'false'
+          severity: 'HIGH,CRITICAL,MEDIUM,LOW'
           scan-type: 'fs'
           exit-code: '0'
 
@@ -57,8 +56,7 @@ jobs:
           mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=githubaction-cicd
 
       - name: Build and analyze
-        run: |
-          mvn clean package
+        run: mvn clean package
 
       - name: Authenticate with Google Cloud
         id: auth
@@ -78,7 +76,6 @@ jobs:
           image-ref: us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
           scanners: 'vuln,secret'
           format: 'table'
-          # output: 'trivy-results.sarif'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
@@ -89,35 +86,15 @@ jobs:
           gcloud auth configure-docker us-central1-docker.pkg.dev
           docker push us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
 
-#
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: githubaction-cicd-service
           region: us-central1
           image: us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
-#          ports:
-#            - containerPort: 8080
-      -
-
-#      - name: Deploy to Cloud Run with environment variables
-#        run: |
-#          gcloud run deploy githubaction-cicd-service \
-#            --image=us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }} \
-#            --platform=managed \
-#            --region=us-central1 \
-#            --allow-unauthenticated \
-#            --port=8080 \
-#            --set-env-vars "MYSQL_HOST=${{ secrets.MYSQL_HOST_WITH_PORT }},MYSQL_DB=${{ secrets.MYSQL_DB_NAME }},MYSQL_USER=${{ secrets.MYSQL_USER }},MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}"
-      - name: Deploy to Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v2
-        with:
-          service: githubaction-cicd-service
-          region: us-central1
-          image: us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
-          env: |
+          allow-unauthenticated: true
+          set-env-vars: |
             MYSQL_HOST=${{ secrets.MYSQL_HOST_WITH_PORT }}
-#            MYSQL_PORT=${{ secrets.MYSQL_PORT }}
             MYSQL_DB=${{ secrets.MYSQL_DB_NAME }}
             MYSQL_USER=${{ secrets.MYSQL_USER }}
             MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
