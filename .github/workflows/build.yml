@@ -231,7 +231,7 @@ jobs:
       - name: Scan for Secrets using Trivy
         uses: aquasecurity/trivy-action@0.20.0
         with:
-          targets: 'src/'  # Replace 'src/' with your source code directory
+          scan-ref: .  # Replace 'src/' with your source code directory
           format: 'table'  # Output format (table, json, csv, etc.)
           ignore-unfixed: 'false'  # Whether to ignore unfixed vulnerabilities
           severity: 'HIGH,CRITICAL,MEDIUM,LOW'  # Minimum severity level to report (e.g., 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL')
@@ -288,3 +288,17 @@ jobs:
         run: |
           gcloud auth configure-docker us-central1-docker.pkg.dev
           docker push us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
+
+#      uses: 'google-github-actions/deploy-cloudrun@33553064113a37d688aa6937bacbdc481580be17' # google-github-actions/deploy-cloudrun@v2
+#      with:
+#        service: githubaction-cicd-service
+#        region: us-central1
+#        image: us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
+
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: githubaction-cicd-service
+          region: us-central1
+          image: us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
