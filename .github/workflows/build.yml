@@ -89,12 +89,22 @@ jobs:
           gcloud auth configure-docker us-central1-docker.pkg.dev
           docker push us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
 
+#
+#      - name: Deploy to Cloud Run
+#        uses: google-github-actions/deploy-cloudrun@v2
+#        with:
+#          service: githubaction-cicd-service
+#          region: us-central1
+#          image: us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
+##          ports:
+##            - containerPort: 8080
 
-      - name: Deploy to Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v2
-        with:
-          service: githubaction-cicd-service
-          region: us-central1
-          image: us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
-#          ports:
-#            - containerPort: 8080
+      - name: Deploy to Cloud Run with environment variables
+        run: |
+          gcloud run deploy githubaction-cicd-service \
+            --image=us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }} \
+            --platform=managed \
+            --region=us-central1 \
+            --allow-unauthenticated \
+            --port=8080 \
+            --set-env-vars "MYSQL_HOST=${{ secrets.MYSQL_HOST_WITH_PORT }},MYSQL_DB=${{ secrets.MYSQL_DB_NAME }},MYSQL_USER=${{ secrets.MYSQL_USER }},MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}"
