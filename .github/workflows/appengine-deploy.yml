@@ -1,11 +1,103 @@
+#
+#name: deploy to app engine
+#
+#on:
+#  push:
+#    branches: [ "master" ]
+##  pull_request:
+##    branches: [ "master" ]
+#  workflow_dispatch:
+#
+#jobs:
+#  build:
+#    runs-on: ubuntu-latest
+#    permissions:
+#      id-token: write
+#      security-events: write
+#      actions: read
+#      contents: read
+#    env:
+#      MYSQL_HOST_WITH_PORT: ${{ secrets.MYSQL_HOST_WITH_PORT }}
+#      MYSQL_DB_NAME: ${{ secrets.MYSQL_DB_NAME }}
+#      MYSQL_USER: ${{ secrets.MYSQL_USER }}
+#      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+#
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#
+#      - name: Set up JDK 11
+#        uses: actions/setup-java@v4
+#        with:
+#          java-version: '11'
+#          distribution: 'temurin'
+#          cache: maven
+#
+#      - name: Scan for Secrets using Trivy
+#        uses: aquasecurity/trivy-action@0.20.0
+#        with:
+#          scan-ref: .
+#          format: 'table'
+#          ignore-unfixed: 'false'
+#          severity: 'HIGH,CRITICAL,MEDIUM,LOW'
+#          scan-type: 'fs'
+#          exit-code: '0'
+#
+#      - name: Run Unit Tests
+#        run: mvn test
+#
+#      - name: Generate Code Coverage Report
+#        run: mvn jacoco:report
+#
+#      - name: Analyze with SonarQube
+#        env:
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+#        run: |
+#          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=githubaction-cicd
+#
+#      - name: Build and analyze
+#        run: mvn clean package
+#
+#      - name: Authenticate with Google Cloud
+#        id: auth
+#        uses: google-github-actions/auth@v2.0.0
+#        with:
+#          workload_identity_provider: '${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}'
+#          service_account: '${{ secrets.SERVICE_ACCOUNT_EMAIL }}'
+#
+#      - name: Build Docker image
+#        run: |
+#          docker build -t us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }} .
+#
+#      - name: Run Trivy vulnerability scanner
+#        uses: aquasecurity/trivy-action@0.20.0
+#        with:
+#          scan-type: 'image'
+#          image-ref: us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
+#          scanners: 'vuln,secret'
+#          format: 'table'
+#          ignore-unfixed: true
+#          vuln-type: 'os,library'
+#          severity: 'CRITICAL,HIGH'
+#          exit-code: '0'
+#
+#      - name: Docker Push to GAR
+#        run: |
+#          gcloud auth configure-docker us-central1-docker.pkg.dev
+#          docker push us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
+#
+#      - name: Deploy Docker Image to App Engine
+#        run: |
+##         gcloud app describe || gcloud app create --region=us-central
+#          gcloud app deploy --image-url=us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }} --quiet
+
 
 name: deploy to app engine
 
 on:
   push:
     branches: [ "master" ]
-#  pull_request:
-#    branches: [ "master" ]
   workflow_dispatch:
 
 jobs:
@@ -89,5 +181,4 @@ jobs:
 
       - name: Deploy Docker Image to App Engine
         run: |
-#          gcloud app describe || gcloud app create --region=us-central
           gcloud app deploy --image-url=us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }} --quiet
