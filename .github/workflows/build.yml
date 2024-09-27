@@ -199,7 +199,7 @@ jobs:
           image: us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
           allow-unauthenticated: true
           set-env-vars: |
-            MYSQL_HOST_WITH_PORT=${{ secrets.MYSQL_HOST_WITH_PORT }}
-            MYSQL_DB_NAME=${{ secrets.MYSQL_DB_NAME }}
-            MYSQL_USER=${{ secrets.MYSQL_USER }}
-            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+           MYSQL_HOST_WITH_PORT=${{ secrets.MYSQL_HOST_WITH_PORT }}
+           MYSQL_DB_NAME=${{ secrets.MYSQL_DB_NAME }}
+           MYSQL_USER=${{ secrets.MYSQL_USER }}
+           MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
