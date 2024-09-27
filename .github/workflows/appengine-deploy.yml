@@ -179,6 +179,12 @@ jobs:
           gcloud auth configure-docker us-central1-docker.pkg.dev
           docker push us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
 
+
+      - name: Create app.yaml
+        run: |
+          echo "runtime: custom" > app.yaml
+          echo "env: flex" >> app.yaml
+
       - name: Deploy Docker Image to App Engine
         run: |
           gcloud app deploy --image-url=us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }} --quiet
