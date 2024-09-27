@@ -184,6 +184,10 @@ jobs:
         run: |
           echo "runtime: custom" > app.yaml
           echo "env: flex" >> app.yaml
+          echo "network:" >> app.yaml
+          echo "name: vpc-github-actions-cicd" >> app.yaml
+          echo "automatic_scaling:" >> app.yaml
+          echo "  max_num_instances: 10" >> app.yaml
 
       - name: Deploy Docker Image to App Engine
         run: |
