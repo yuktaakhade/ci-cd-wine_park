@@ -89,5 +89,5 @@ jobs:
 
       - name: Deploy Docker Image to App Engine
         run: |
-          gcloud app describe || gcloud app create --region=us-central
+#          gcloud app describe || gcloud app create --region=us-central
           gcloud app deploy --image-url=us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }} --quiet
