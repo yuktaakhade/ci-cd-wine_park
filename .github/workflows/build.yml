@@ -43,6 +43,7 @@ jobs:
           scan-type: 'fs'
           exit-code: '0'
 
+
       - name: Run Unit Tests
         run: mvn test
 
