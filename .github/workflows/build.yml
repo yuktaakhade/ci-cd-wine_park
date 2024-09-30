@@ -10,7 +10,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+#    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     permissions:
       id-token: write
       security-events: write
@@ -21,6 +22,10 @@ jobs:
       MYSQL_DB_NAME: ${{ secrets.MYSQL_DB_NAME }}
       MYSQL_USER: ${{ secrets.MYSQL_USER }}
       MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      PROJECT_ID: 'ashiph-2' #
+      REGION: 'us-central1'
+      SERVICE: 'githubaction-cicd-artifact-registry'
+      IMAGE_NAME: 'githubaction-cicd-dockerimage'
 
     steps:
       - name: Checkout
@@ -69,13 +74,13 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }} .
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.20.0
         with:
           scan-type: 'image'
-          image-ref: us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
+          image-ref: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           scanners: 'vuln,secret'
           format: 'table'
           ignore-unfixed: true
@@ -86,7 +91,7 @@ jobs:
       - name: Docker Push to GAR
         run: |
           gcloud auth configure-docker us-central1-docker.pkg.dev
-          docker push us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
 
       - name: Deploy to Cloud Run
@@ -94,7 +99,7 @@ jobs:
         with:
           service: githubaction-cicd-service
           region: us-central1
-          image: us-central1-docker.pkg.dev/ashiph-2/githubaction-cicd-artifact-registry/githubaction-cicd-dockerimage:${{ github.sha }}
+          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           env_vars: |
             MYSQL_HOST_WITH_PORT=${{ secrets.MYSQL_HOST_WITH_PORT }}
             MYSQL_DB_NAME=${{ secrets.MYSQL_DB_NAME }}
